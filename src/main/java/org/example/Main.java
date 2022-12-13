@@ -1,82 +1,73 @@
 package org.example;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
+import java.util.*;
 import java.util.stream.Collectors;
 
-    public class Main {
-        public static void main(String[] args) {
+public class Main {
+    public static void main(String[] args) {
+//            1) Дан список слов. С помощью стримов вывести его аббревиатуру в виде S.M.A.R.T.
+        List<String> list = Arrays.asList("Specific", "Measurable", "Achievable", "Relevant", "Time-bound");
 
-//        First level: 1. Создать Supplier, который генерирует случайные значения типа Integer
+        //Вариант 1
+        System.out.println(list.stream().map(e -> e.substring(0, 1)).collect(Collectors.joining(".")));
 
-            Supplier<Integer> sup = () -> new Random().nextInt();
-            System.out.println(sup.get());
-            System.out.println("-------------------------------");
+        //Вариант 2
+        System.out.println(list.stream().map(e -> e.substring(0, 1).concat(".")).reduce(String::concat).get());
 
-//        Создать BiFunction, которая возводит первый аргумент типа int в степень второго аргумента типа int
-
-            BiFunction<Integer, Integer, Double> func = Math::pow;
-            System.out.println(func.apply(5, 3));
-            System.out.println("-------------------------------");
+        System.out.println("-----------------------------");
 
 
-//        Отсортировать с помощью стримов список из строк
-//        по алфавиту
-//        в обратном порядке
+//            2) В класс Cat добавить поле String catOwner
 
-            List<String> list = Arrays.asList("Hello, my friend", "How are you", "red car drives far", "the weather was cold");
-            System.out.println(list.stream().sorted().collect(Collectors.toList()));
-            System.out.println(list.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
-            System.out.println("-------------------------------");
+        Cat cat1 = new Cat("Myrka", 2, "black-white", true, "Tim Tailor");
+        Cat cat2 = new Cat("Lysia", 1, "white", true, "Maria Rei");
+        Cat cat3 = new Cat("Timur", 1, "black", true, "Simon Door");
+        Cat cat4 = new Cat("Tom", 2, "black", true, "Tim Tailor");
+        Cat cat5 = new Cat("Vasia", 3, "grey", false, "Vita Kama");
+        Cat cat6 = new Cat("Tom", 2, "black", false, "Maria Rei");
+        Cat cat7 = new Cat("Markis", 4, "blue", true, "Tim Tailor");
+        Cat cat8 = new Cat("Rudolf", 1, "white", false, "Mr.Ben");
+        Cat cat9 = new Cat("Umka", 1, "red", true, "Mr.Ben");
+        Cat cat10 = new Cat("Alisa", 2, "blue", false, "Mr.Ben");
+        Cat[] cats = new Cat[]{cat1, cat2, cat3, cat4, cat5, cat6, cat7, cat8, cat9, cat10};
 
-//        Из списка чисел типа Integer с помощью стримов создать список их строковых представлений
+        //  сформировать и вывести Map из списка имен хозяев с числом их коше
 
-            List<Integer> listInt = Arrays.asList(3, 55, 47, 12, 100, 3, 12, 45, 78);
-            List<String> listStr = listInt.stream().map(el -> el.toString()).collect(Collectors.toList());
-            System.out.println(listStr);
-            System.out.println("-------------------------------");
+        // 1 вариант
+        Map<String, Integer> map = Arrays.stream(cats).collect(Collectors.toMap(Cat::getCatOwner, v -> 1, (t1, t2) -> t1 + t2));
+        System.out.println(map);
 
+        // 2вариант
+        Map<String, Long> map1 = Arrays.stream(cats).collect(Collectors.groupingBy(Cat::getCatOwner, Collectors.counting()));
+        System.out.println(map1);
+        System.out.println("-----------------------------");
 
-//        Second level: 5. Создать класс Cat с полями
-//        String name
-//        int age
-//        String colour
-//        boolean isHungry
-//        Создать список из экземплянов класса Cat. С помощью стримов:
+//            сформировать и вывести Map из списка имен хозяев со списком имен их кошек
 
-            Cat cat1 = new Cat("Myrka", 2, "black-white", true);
-            Cat cat2 = new Cat("Lysia", 1, "white", true);
-            Cat cat3 = new Cat("Timur", 1, "black", true);
-            Cat cat4 = new Cat("Tom", 2, "black", true);
-            Cat cat5 = new Cat("Vasia", 3, "grey", false);
-            Cat cat6 = new Cat("Tom", 2, "black", false);
-            Cat cat7 = new Cat("Markis", 4, "blue", true);
-            Cat cat8 = new Cat("Rudolf", 1, "white", false);
-            Cat cat9 = new Cat("Umka", 1, "red", true);
-            Cat cat10 = new Cat("Alisa", 2, "blue", false);
-            Cat[] cats = new Cat[]{cat1, cat2, cat3, cat4, cat5, cat6, cat7, cat8, cat9, cat10};
+        Map<String, List<String>> map2 = Arrays.stream(cats).collect(Collectors.groupingBy(Cat::getCatOwner, Collectors.mapping(Cat::getName, Collectors.toList())));
+        System.out.println(map2);
+        System.out.println("-----------------------------");
 
-//        вывести список голодных кошек старше 2 лет
+//            3)StringBuilder: напишите метод, который принимает две строки в аргументах, соединяет их и определяет реверсивный порядок, выведите результат на консоль.
 
-            List<Cat> myList1 = Arrays.stream(cats).filter(el -> el.getAge() > 2).collect(Collectors.toList());
-            myList1.forEach(System.out::println);
-            System.out.println("-------------------------------");
+        System.out.println(twoStringReverse("Cat", "Dog"));
+        System.out.println("-----------------------------");
 
-//        вывести список черных кошек с именем, начинающимся на T
+//            4)StringBuilder: дан массив символов, объедините его и замените символ '?' на правильный символ, выведите результат на консоль.
 
-            List<Cat> myList2 = Arrays.stream(cats).filter(e -> (e.getColour() == "black" && e.getName().substring(0, 1)
-                    .contains("T"))).collect(Collectors.toList());
-            myList2.forEach(System.out::println);
-            System.out.println("-------------------------------");
+        char[] arr = new char[]{'S', 't', 'r', 'i', '?', 'g', ' ', 'i', 's', ' ', 'i', 'm', 'm', 'u', 't', 'a', 'b', 'l', 'e'};
 
-//        вывести список имен кошек возраста 1 год
-
-            List<String> myList3 = Arrays.stream(cats).filter(e -> (e.getAge() == 1)).map(a -> a.getName()).collect(Collectors.toList());
-            myList3.forEach(System.out::println);
-        }
+        StringBuilder build = new StringBuilder();
+        build.append(arr);
+        int position = build.indexOf("?");
+        build.replace(position, position + 1, "n");
+        System.out.println(build);
     }
+
+    public static String twoStringReverse(String cat, String dog) {
+        StringBuilder resStr = new StringBuilder(cat);
+        resStr.append(dog);
+        return resStr.reverse().toString();
+    }
+}
 
